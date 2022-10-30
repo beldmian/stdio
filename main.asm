@@ -5,7 +5,6 @@ digit   dw 0d123
 
 SECTION .bss
 last_arg: resb 1
-digits_count: resb 1
 
 SECTION .text
 global _start           
@@ -29,7 +28,6 @@ put_symbol:
   ret
 
 _printf:
-  mov byte [last_arg], 0
   mov eax, [esp+4]
   jmp printf_loop
 
@@ -80,11 +78,13 @@ print_number:
   add eax, [last_arg]
   mov eax, [esp+12+eax]
   mov eax, [eax]
-  mov byte [digits_count], 0
+  push dword 0
+  mov ebp, esp
+
   jmp print_number_loop 
 
 print_number_end_loop:
-  cmp byte [digits_count], 0
+  cmp dword [ebp], 0
   jz print_number_end
   
   mov eax, 4
@@ -93,11 +93,12 @@ print_number_end_loop:
   mov edx, 1
   int 0x80
   pop edx
-  dec byte [digits_count]
+  dec dword [ebp]
 
   jmp print_number_end_loop
 
 print_number_end:
+  pop ebp
   pop eax
   inc eax
   inc byte [last_arg]
@@ -114,7 +115,7 @@ print_number_loop:
   add edx, 0x30
 
   push edx
-  inc byte [digits_count]
+  inc dword [ebp]
   
   jmp print_number_loop
 
