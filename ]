@@ -1,11 +1,10 @@
 SECTION .data
-msg     db "Hello, %s, my friend, %d, aa",0x0
+msg     db "Hello, %s, my friend, %d",0x0
 name    db "World",0x0
-digit   dw 0d123
+digit   db 123
 
 SECTION .bss
 last_arg: resb 1
-digits_count: resb 1
 
 SECTION .text
 global _start           
@@ -79,23 +78,7 @@ print_number:
   add eax, [last_arg]
   add eax, [last_arg]
   mov eax, [esp+12+eax]
-  mov eax, [eax]
-  mov byte [digits_count], 0
   jmp print_number_loop 
-
-print_number_end_loop:
-  cmp byte [digits_count], 0
-  jz print_number_end
-  
-  mov eax, 4
-  mov ebx, 1
-  mov ecx, esp
-  mov edx, 1
-  int 0x80
-  pop edx
-  dec byte [digits_count]
-
-  jmp print_number_end_loop
 
 print_number_end:
   pop eax
@@ -106,16 +89,15 @@ print_number_end:
 
 print_number_loop:
   cmp eax, 0
-  jz print_number_end_loop
+  jz print_number_end
   mov edx, 0
   mov ecx, 0d10
   div ecx
 
   add edx, 0x30
-
   push edx
-  inc byte [digits_count]
-  
+  call put_symbol
+  pop edx
   jmp print_number_loop
 
 
