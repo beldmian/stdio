@@ -1,13 +1,8 @@
-SECTION .data
-msg     db "Hello, %s, my friend, %d, aa",0x0
-name    db "World",0x0
-digit   dw 0d123
-
 SECTION .bss
 last_arg: resb 1
 
 SECTION .text
-global _start           
+; global _start           
 
 put_symbol:
   push eax
@@ -27,8 +22,9 @@ put_symbol:
   pop eax
   ret
 
-_printf:
+printf:
   mov eax, [esp+4]
+  mov byte [last_arg], 0
   jmp printf_loop
 
 printf_loop:
@@ -123,16 +119,3 @@ print_number_loop:
 printf_end:
   ret
 
-exit:
-  mov eax, 1  
-  xor ebx, ebx
-  int 0x80
-  ret
-  
-_start:        
-  push digit
-  push name
-  push msg
-  call _printf
-
-  call exit
